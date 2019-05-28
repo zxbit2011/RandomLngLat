@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+<head></head>
+<meta charset="UTF-8"/>
+<link rel="stylesheet" type="text/css" href="css/random.css"/>
+<title>随机生成地图经纬度</title>
+<body>
+<h2>随机生成地图经纬度</h2>
+<div class="setting">
+    <div class="m10"><span>生成类型：</span>
+        <label><input type="radio" value="0" name="type" checked="checked">指定城市</label>
+        <label><input type="radio" value="1" name="type">自定义</label>
+    </div>
+    <div class="type-div assign" style="padding: 10px 20px;width: 80%;">
+
+    </div>
+    <div class="type-div custom" style="display: none;">
+        <div class="setting_item m10">
+            <span>经度：</span>
+            <input type="text" name="lng" placeholder="请输入起始经度 - longitude">
+        </div>
+        <div class="setting_item m10">
+            <span>纬度：</span>
+            <input type="text" name="lat" placeholder="请输入起始纬度 - longitude">
+        </div>
+    </div>
+    <div class="m10 ">
+        <span>每个数量：</span>
+        <input type="number" placeholder="生成坐标数量" name="num" value="10">
+    </div>
+    <div class="m10 ">
+        <span>范围数值：</span>
+        <input type="text" placeholder="范围值决定与中心坐标的距离" name="range" value="1">
+        <p style="color:gray;"> * 范围值越大，生成的坐标离中心坐标越远。反之距离中心坐标越近</p>
+    </div>
+    <div>
+        <button onclick="createSpots()">生成坐标</button>
+        <button  onclick="test()" style="background: burlywood;border: 1px solid burlywood">测试生成</button>
+    </div>
+    <div class="m10">
+        <textarea id="result" style="padding: 10px;width: 80%;height: 200px;"></textarea>
+    </div>
+</div>
+<script src="js/jquery.min.js"></script>
+<script src="js/lnglat.js"></script>
+<script>
+    var provinceNum3 = [
+        ["河北省", 7904],
+        ["重庆市", 5079],
+        ["北京市", 3394],
+        ["天津市", 3364],
+        ["山西省", 3299],
+        ["内蒙古", 500],
+        ["重庆市", 500],
+        ["辽宁省", 500],
+        ["吉林省", 500],
+        ["黑龙江省", 500],
+        ["四川省", 500],
+        ["上海市", 500],
+        ["河南省", 500],
+        ["江苏省", 500],
+        ["安徽省", 500],
+        ["浙江省", 500],
+        ["山东省", 300],
+        ["福建省", 300],
+        ["江西省", 300],
+        ["辽宁省", 300],
+        ["湖南省", 300],
+        ["广东省", 300],
+        ["湖北省", 300],
+        ["贵州省", 300],
+        ["广西", 300],
+        ["云南省", 300],
+        ["海南省", 300],
+        ["陕西省", 300],
+        ["甘肃省", 300],
+        ["新疆", 300],
+        ["西藏", 300],
+        ["宁夏", 300],
+        ["青海省", 300],
+        ["西藏", 100],
+        ["河南省", 100],
+        ["北京市", 100],
+        ["北京市", 100],
+        ["河南省", 100],
+        ["北京市", 100],
+        ["辽宁省", 30],
+        ["新疆", 20],
+        ["澳门", 1]
+    ]
+    var provinceNum2 = [
+        ["河北省", 500],
+        ["重庆市", 500],
+        ["北京市", 500],
+        ["天津市", 500],
+        ["山西省", 500],
+        ["内蒙古", 2893],
+        ["四川省", 2652],
+        ["辽宁省", 2646],
+        ["吉林省", 2635],
+        ["黑龙江省", 2632],
+        ["重庆市", 2529],
+        ["上海市", 2360],
+        ["河南省", 2282],
+        ["江苏省", 2255],
+        ["安徽省", 2197],
+        ["浙江省", 2155],
+        ["山东省", 1875],
+        ["福建省", 1851],
+        ["江西省", 1824],
+        ["辽宁省", 1794],
+        ["湖南省", 1684],
+        ["广东省", 1680],
+        ["湖北省", 1672],
+        ["贵州省", 1614],
+        ["广西", 1593],
+        ["云南省", 1442],
+        ["海南省", 1431],
+        ["陕西省", 1406],
+        ["甘肃省", 1390],
+        ["新疆", 1356],
+        ["西藏", 1331],
+        ["宁夏", 1288],
+        ["青海省", 1283],
+        ["西藏", 100],
+        ["河南省", 100],
+        ["北京市", 100],
+        ["北京市", 100],
+        ["河南省", 100],
+        ["北京市", 100],
+        ["辽宁省", 30],
+        ["新疆", 20],
+        ["澳门", 1]
+    ]
+    var provinceNum = [
+        ["河北省", 500],
+        ["重庆市", 500],
+        ["北京市", 500],
+        ["天津市", 500],
+        ["山西省", 500],
+        ["内蒙古", 300],
+        ["重庆市", 300],
+        ["辽宁省", 300],
+        ["吉林省", 300],
+        ["黑龙江省", 300],
+        ["四川省", 300],
+        ["上海市", 300],
+        ["河南省", 300],
+        ["江苏省", 300],
+        ["安徽省", 300],
+        ["浙江省", 300],
+        ["山东省", 1875],
+        ["福建省", 1851],
+        ["江西省", 1824],
+        ["辽宁省", 1794],
+        ["湖南省", 1684],
+        ["广东省", 1680],
+        ["湖北省", 1672],
+        ["贵州省", 1614],
+        ["广西", 1593],
+        ["云南省", 1442],
+        ["海南省", 1431],
+        ["陕西省", 1406],
+        ["甘肃省", 1390],
+        ["新疆", 1356],
+        ["西藏", 1331],
+        ["宁夏", 1288],
+        ["青海省", 1283],
+        ["西藏", 544],
+        ["河南省", 392],
+        ["北京市", 154],
+        ["北京市", 154],
+        ["河南省", 120],
+        ["北京市", 113],
+        ["辽宁省", 79],
+        ["新疆", 71],
+        ["澳门", 1]
+    ]
+    $(function () {
+        var names = []
+        for (let i = 0; i < lnglat.length; i++) {
+            if (!names.includes(lnglat[i].name)) {
+                names.push(lnglat[i].name)
+            }
+        }
+        for (let i = 0; i < names.length; i++) {
+            $(".assign").append("<label><input type=\"checkbox\" value=\"" + names[i] + "\" name=\"province\">" + names[i] + "</label>");
+        }
+        $('[name=type]').click(function () {
+            var type = $('[name=type]:checked').val();
+            $(".type-div").hide();
+            if (type == "0") {
+                $(".assign").show();
+            } else {
+                $(".custom").show();
+            }
+        });
+    });
+
+    function test() {
+        var sumLngLat = new Array();
+        $("input[name=range]").val(50)
+        var newLngLat = new Array();
+        for (let i = 0; i < provinceNum.length; i++) {
+            var name = provinceNum[i][0], num = provinceNum[i][1]/5
+            console.log(i, name)
+            var sum = 0
+            while (true) {
+                var data = create(name, num, sum)
+                newLngLat = newLngLat.concat(data.list);
+                sum = data.sum;
+                if (sum >= num) {
+                    break;
+                }
+                console.log(i + " -》 " + sum)
+                data = null
+            }
+        }
+        sumLngLat.push(newLngLat)
+        $("input[name=range]").val(60)
+        newLngLat = new Array();
+        for (let i = 0; i < provinceNum2.length; i++) {
+            var name = provinceNum2[i][0], num = provinceNum2[i][1]/5
+            console.log(i, name)
+            var sum = 0
+            while (true) {
+                var data = create(name, num, sum)
+                newLngLat = newLngLat.concat(data.list);
+                sum = data.sum;
+                if (sum >= num) {
+                    break;
+                }
+                console.log(i + " -》 " + sum)
+                data = null
+            }
+        }
+        sumLngLat.push(newLngLat)
+        $("input[name=range]").val(70)
+        newLngLat = new Array();
+        for (let i = 0; i < provinceNum3.length; i++) {
+            var name = provinceNum3[i][0], num = provinceNum3[i][1]/5
+            console.log(i, name)
+            var sum = 0
+            while (true) {
+                var data = create(name, num, sum)
+                newLngLat = newLngLat.concat(data.list);
+                sum = data.sum;
+                if (sum >= num) {
+                    break;
+                }
+                console.log(i + " -》 " + sum)
+                data = null
+            }
+        }
+        sumLngLat.push(newLngLat)
+        $("#result").val(JSON.stringify(sumLngLat));
+    }
+
+    function createSpot(x, y) {
+        var pos = new Array();
+        for (var i = 0; i < 1; i++) {
+            pos.push(parseFloat(parseFloat(parseFloat(x) + getRandom()).toFixed(6)), parseFloat(parseFloat(parseFloat(y) + getRandom()).toFixed(6)));
+        }
+        return pos;
+    }
+
+    function getRandom() {
+        var range = parseFloat($("input[name=range]").val());
+        return Math.random() / 100 * range;
+    }
+
+    function createSpots() {
+        var type = $("input[name=type]:checked").val();
+        var num = parseInt($("input[name=num]").val());
+        var newLngLat = new Array();
+        switch (type) {
+            case "0":
+                var provinceList = new Array();
+                //指定城市
+                $.each($('[name=province]:checked'), function () {
+                    provinceList.push($(this).val())
+                });
+                if (provinceList.length <= 0) {
+                    alert("请选择需要生成的省份");
+                    return
+                }
+
+                for (let i = 0; i < provinceList.length; i++) {
+                    var sum = 0
+                    while (true) {
+                        var data = create(provinceList[i], num, sum)
+                        newLngLat = newLngLat.concat(data.list);
+                        sum = data.sum;
+                        if (sum >= num) {
+                            break;
+                        }
+                    }
+                }
+                break
+            case "1":
+                var lng = $("input[name=lng]").val();
+                var lat = $("input[name=lat]").val();
+                if (lng == "") {
+                    alert("输入经度");
+                    return
+                }
+                if (lat == "") {
+                    alert("输入纬度");
+                    return
+                }
+                for (let i = 0; i < num; i++) {
+                    newLngLat.push(createSpot(parseFloat(lng), parseFloat(lat)))
+                }
+                break
+        }
+        console.log(newLngLat)
+        $("#result").val(JSON.stringify(newLngLat));
+    }
+
+    function create(province, num, sum) {
+        var newLngLat = new Array();
+        var flag = false;
+        for (let j = 0; j < lnglat.length; j++) {
+            if (province == lnglat[j].name) {
+                flag = true;
+                newLngLat.push(createSpot(lnglat[j].lng, lnglat[j].lat))
+                sum++
+                if (sum >= num) {
+                    break;
+                }
+            }
+        }
+        return {list: newLngLat, sum: sum}
+    }
+
+</script>
+</body>
+</html>

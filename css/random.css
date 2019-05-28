@@ -1,0 +1,16 @@
+.m10 {
+    margin: 10px;
+}
+
+input[type=text], input[type=number] {
+    padding: 5px 10px;
+    line-height: 20px
+}
+
+button {
+    padding: 7px 100px;
+    border: 1px solid #5ea0fe;
+    background: #5ea0fe;
+    color: #fff;
+    margin: 30px 10px;
+}
